@@ -10,5 +10,26 @@ el curso de Inteligencia Artificial
 - RAG sobre normativa de formalización MYPE
 - FastAPI
 
+## Pasos Iniciales
+- Crear un entorno virtual dentro del proyecto
+```
+python3 -m venv .venv
+source .venv/Scripts/activate
+pip install -r requirements.txt
+```
+- Configurar el entorno `settings.json` en `.vscode/settings.json`
+```json
+{
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "charliermarsh.ruff",
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff"
+  },
+  "ruff.organizeImports": true
+}
+```
+
+
 ## Estado del proyecto
 🚧 En desarrollo
