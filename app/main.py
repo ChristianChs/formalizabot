@@ -1,18 +1,14 @@
-from app.rag.vectorstore import load_vectorstore
+from app.rag.chain import build_rag_chain
 
 
 def main():
-    vectorstore = load_vectorstore()
+    chain = build_rag_chain()
 
-    pregunta = "¿Qué se entiende por formalizar una empresa?"
-    resultados = vectorstore.similarity_search(pregunta, k=2)
+    pregunta = "Quiero abrir una bodega en Tacna, ¿qué necesito?"
+    respuesta = chain.invoke(pregunta)
 
-    print(f"\n=== Resultados para: '{pregunta}' ===")
-    for i, doc in enumerate(resultados):
-        print(f"\n--- Resultado {i + 1} ---")
-        print(f"Fuente: {doc.metadata.get('nombre_archivo')}")
-        print(f"Chunk #: {doc.metadata.get('chunk_index')}")
-        print(f"Contenido: {doc.page_content[:300]}...")
+    print(f"=== Pregunta ===\n{pregunta}\n")
+    print(f"=== Respuesta (con RAG) ===\n{respuesta}")
 
 
 if __name__ == "__main__":
