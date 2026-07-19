@@ -23,8 +23,8 @@ def split_documents(documentos: list[Document]) -> list[Document]:
             en el vectorstore.
     """
     splitter = RecursiveCharacterTextSplitter(
-        chunk_size=800,
-        chunk_overlap=150,
+        chunk_size=1200,
+        chunk_overlap=250,
         separators=["\n\n", "\n", ". ", " ", ""],
     )
 

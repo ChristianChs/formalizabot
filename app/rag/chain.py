@@ -9,7 +9,7 @@ from app.schemas import RespuestaMYPE
 # k y temperature estándar de la cadena de producción: k=4 da suficiente
 # cobertura de contexto sin diluir la ventana del prompt, y temperature=0
 # prioriza determinismo sobre contenido normativo (ver SPEC.md, Bloque 1).
-RETRIEVAL_K = 4
+RETRIEVAL_K = 6
 LLM_TEMPERATURE = 0
 
 
@@ -90,7 +90,14 @@ del JSON.
 
 
 def _build_retriever():
-    return load_vectorstore().as_retriever(search_kwargs={"k": RETRIEVAL_K})
+    return load_vectorstore().as_retriever(
+        search_type="mmr",
+        search_kwargs={
+            "k": RETRIEVAL_K,
+            "fetch_k": 20,
+            "lambda_mult": 0.5,
+        },
+    )
 
 
 def build_condensador():
