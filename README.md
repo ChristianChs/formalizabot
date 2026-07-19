@@ -10,7 +10,7 @@ detalle de arquitectura y requisitos.
 
 ## Stack
 - Python + LangChain (LCEL)
-- LLM vía Groq (Llama 3.1 8B)
+- LLM vía Groq (GPT-OSS 20B)
 - Embeddings locales (HuggingFace) + Chroma como vectorstore
 - Gradio como interfaz de prueba/demo
 
@@ -28,7 +28,7 @@ Configurar variables de entorno: copiar `.env.example` a `.env` y completar
 `GROQ_API_KEY` con una clave de [console.groq.com](https://console.groq.com).
 ```
 GROQ_API_KEY=tu_clave_aqui
-LLM_MODEL=llama-3.1-8b-instant
+LLM_MODEL=openai/gpt-oss-20b
 LLM_BASE_URL=https://api.groq.com/openai/v1
 ```
 
