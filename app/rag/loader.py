@@ -57,6 +57,8 @@ def load_documents(data_dir: str = "data/normativa") -> list[Document]:
         for doc in docs:
             doc.metadata["nombre_archivo"] = archivo.name
             doc.metadata["tipo"] = archivo.suffix.lower().replace(".", "")
+            if "page" in doc.metadata:
+                doc.metadata["pagina"] = doc.metadata["page"] + 1
 
         documentos.extend(docs)
 
