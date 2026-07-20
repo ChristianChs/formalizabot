@@ -101,6 +101,7 @@ app/
     build_index.py            # script de (re)indexación
   tools/
     nrus.py              # tool: cálculo determinista de categoría NRUS
+    remype.py            # tool: clasificación micro/pequeña empresa (REMYPE) por ventas anuales en UIT
     router.py            # decide si una tool aplica, valida y ejecuta
   eval/
     regression.py        # set de regresión (chain.batch)

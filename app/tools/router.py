@@ -7,8 +7,9 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from app.llm import get_llm
 from app.rag.chain import LLM_TEMPERATURE
 from app.tools.nrus import calcular_categoria_nrus
+from app.tools.remype import clasificar_empresa_mype
 
-TOOLS = [calcular_categoria_nrus]
+TOOLS = [calcular_categoria_nrus, clasificar_empresa_mype]
 TOOLS_BY_NAME = {t.name: t for t in TOOLS}
 
 SISTEMA_ROUTER = (
@@ -16,9 +17,13 @@ SISTEMA_ROUTER = (
     "determinista. Llama una tool ÚNICAMENTE si el mensaje contiene, de "
     "forma EXPLÍCITA, todos los datos que esa tool necesita (por ejemplo, "
     "un monto de ingresos en soles ya mencionado por el usuario para "
-    "calcular_categoria_nrus). Si falta un dato requerido, o el usuario no "
-    "lo pidió explícitamente, NO llames ninguna tool — nunca inventes ni "
-    "asumas un valor de argumento."
+    "calcular_categoria_nrus, o unas ventas anuales ya expresadas en UIT "
+    "por el usuario para clasificar_empresa_mype). Si el usuario da un "
+    "monto en soles y la tool requiere UIT (o viceversa), NO conviertas la "
+    "unidad tú mismo: trátalo como un dato faltante y no llames la tool. "
+    "Si falta un dato requerido, o el usuario no lo pidió explícitamente, "
+    "NO llames ninguna tool — nunca inventes ni asumas un valor de "
+    "argumento."
 )
 
 
@@ -61,6 +66,14 @@ def _llamada_valida(pregunta: str, nombre: str, args: dict) -> bool:
             return False
         try:
             return _numero_mencionado(pregunta, float(ingresos))
+        except (TypeError, ValueError):
+            return False
+    if nombre == "clasificar_empresa_mype":
+        ventas = args.get("ventas_anuales_uit")
+        if ventas is None:
+            return False
+        try:
+            return _numero_mencionado(pregunta, float(ventas))
         except (TypeError, ValueError):
             return False
     return True
