@@ -1,4 +1,4 @@
-FROM python:3.11-slim AS base
+FROM python:3.14-slim AS base
 
 WORKDIR /srv/app
 
@@ -10,10 +10,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 COPY requirements.txt .
 
-# torch CPU-only: el wheel con CUDA agrega ~2GB de más y este servicio
-# nunca corre en GPU.
-RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu \
-    && pip install --no-cache-dir -r requirements.txt
+# --extra-index-url (no --index-url a secas) para que siga resolviendo el
+# resto de paquetes desde PyPI normal, pero prefiera el wheel CPU-only de
+# torch (el de CUDA agrega ~2GB y este servicio nunca corre en GPU).
+RUN pip install --no-cache-dir -r requirements.txt \
+    --extra-index-url https://download.pytorch.org/whl/cpu
 
 COPY app/ app/
 COPY data/normativa/ data/normativa/
