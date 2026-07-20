@@ -16,8 +16,8 @@ class Chatbot:
 
     Antes de recurrir al RAG, cada turno pasa por `resolver_tool_call`
     (Bloque 9): si la pregunta activa una tool determinista (ej. calcular
-    categoría NRUS, derivar a un asesor humano), se responde directamente
-    con el resultado de la tool, sin generación del LLM de grounding.
+    categoría NRUS), se responde directamente con el resultado de la tool,
+    sin generación del LLM de grounding.
     """
 
     def __init__(self):

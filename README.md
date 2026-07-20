@@ -10,7 +10,7 @@ detalle de arquitectura y requisitos.
 
 ## Stack
 - Python + LangChain (LCEL)
-- LLM vía Groq (GPT-OSS 20B)
+- LLM vía Groq (Llama 3.1 8B)
 - Embeddings locales (HuggingFace) + Chroma como vectorstore
 - Gradio como interfaz de prueba/demo
 
@@ -28,7 +28,7 @@ Configurar variables de entorno: copiar `.env.example` a `.env` y completar
 `GROQ_API_KEY` con una clave de [console.groq.com](https://console.groq.com).
 ```
 GROQ_API_KEY=tu_clave_aqui
-LLM_MODEL=openai/gpt-oss-20b
+LLM_MODEL=llama-3.1-8b-instant
 LLM_BASE_URL=https://api.groq.com/openai/v1
 ```
 
@@ -68,12 +68,25 @@ límite de 6000 tokens/minuto; si lo bajás de golpe con muchas pruebas
 seguidas podés toparte con un `RateLimitError` — esperar un minuto y
 reintentar.
 
+**API HTTP** (para integrar con un servicio externo, ej. un bot de WhatsApp
+sobre Baileys):
+```
+uvicorn app.api:app --reload
+```
+Expone `POST /chat` con body `{"mensaje": "...", "session_id": "..."}` y
+devuelve `{"respuesta", "fuera_de_dominio", "fuentes"}`. Usá `session_id`
+para mapear cada JID/número de WhatsApp a una sesión con memoria propia.
+No implementa autenticación — pensada para correr en la misma red/host que
+el servicio que la consume; si se expone fuera de eso hay que agregarle
+un mecanismo de auth antes.
+
 ## 4. Estructura del proyecto
 
 ```
 app/
   main.py              # punto de entrada CLI (una pregunta, sin memoria)
   ui.py                # interfaz Gradio con memoria de sesión
+  api.py               # API HTTP (FastAPI) para integraciones externas (WhatsApp/Baileys)
   chatbot.py           # clase Chatbot: memoria por sesión + tools + RAG
   llm.py               # cliente LLM (Groq vía ChatOpenAI)
   schemas.py           # RespuestaMYPE (salida estructurada)
@@ -88,7 +101,6 @@ app/
     build_index.py            # script de (re)indexación
   tools/
     nrus.py              # tool: cálculo determinista de categoría NRUS
-    derivar_humano.py    # tool: derivación a asesor humano
     router.py            # decide si una tool aplica, valida y ejecuta
   eval/
     regression.py        # set de regresión (chain.batch)

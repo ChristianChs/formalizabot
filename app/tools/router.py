@@ -6,10 +6,9 @@ from langchain_core.messages import HumanMessage, SystemMessage
 
 from app.llm import get_llm
 from app.rag.chain import LLM_TEMPERATURE
-from app.tools.derivar_humano import derivar_a_humano
 from app.tools.nrus import calcular_categoria_nrus
 
-TOOLS = [calcular_categoria_nrus, derivar_a_humano]
+TOOLS = [calcular_categoria_nrus]
 TOOLS_BY_NAME = {t.name: t for t in TOOLS}
 
 SISTEMA_ROUTER = (
@@ -17,10 +16,9 @@ SISTEMA_ROUTER = (
     "determinista. Llama una tool ÚNICAMENTE si el mensaje contiene, de "
     "forma EXPLÍCITA, todos los datos que esa tool necesita (por ejemplo, "
     "un monto de ingresos en soles ya mencionado por el usuario para "
-    "calcular_categoria_nrus, o un pedido explícito de hablar con una "
-    "persona para derivar_a_humano). Si falta un dato requerido, o el "
-    "usuario no lo pidió explícitamente, NO llames ninguna tool — nunca "
-    "inventes ni asumas un valor de argumento."
+    "calcular_categoria_nrus). Si falta un dato requerido, o el usuario no "
+    "lo pidió explícitamente, NO llames ninguna tool — nunca inventes ni "
+    "asumas un valor de argumento."
 )
 
 
