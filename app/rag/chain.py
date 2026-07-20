@@ -1,15 +1,21 @@
+from langchain_classic.retrievers import ContextualCompressionRetriever
 from langchain_core.output_parsers import JsonOutputParser, StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables import RunnableLambda, RunnablePassthrough
 from app.llm import get_llm
+from app.rag.reranker import build_reranker
 from app.rag.vectorstore import load_vectorstore
 from app.prompts.system_prompt import SYSTEM_PROMPT
 from app.schemas import RespuestaMYPE
 
-# k y temperature estándar de la cadena de producción: k=4 da suficiente
+# k y temperature estándar de la cadena de producción: k=6 da suficiente
 # cobertura de contexto sin diluir la ventana del prompt, y temperature=0
 # prioriza determinismo sobre contenido normativo (ver SPEC.md, Bloque 1).
 RETRIEVAL_K = 6
+# Pool de candidatos por similitud de embeddings antes de re-rankear: más
+# ancho que RETRIEVAL_K para darle al cross-encoder margen real de elegir,
+# no solo reordenar lo que el embedding ya consideraba top-6.
+RETRIEVAL_FETCH_K = 20
 LLM_TEMPERATURE = 0
 
 
@@ -90,13 +96,22 @@ del JSON.
 
 
 def _build_retriever():
-    return load_vectorstore().as_retriever(
-        search_type="mmr",
-        search_kwargs={
-            "k": RETRIEVAL_K,
-            "fetch_k": 20,
-            "lambda_mult": 0.5,
-        },
+    """Recupera un pool amplio por similitud y lo reordena con un cross-encoder.
+
+    Antes se usaba MMR (diversidad + similitud de embeddings) para elegir
+    directamente los RETRIEVAL_K chunks finales. Se reemplaza por: (1)
+    similitud simple trayendo RETRIEVAL_FETCH_K candidatos, y (2) un
+    cross-encoder (`build_reranker`) que evalúa el par (pregunta, chunk) y
+    se queda con los RETRIEVAL_K más relevantes — una señal de relevancia
+    más precisa que la cercanía de embeddings por separado.
+    """
+    base_retriever = load_vectorstore().as_retriever(
+        search_type="similarity",
+        search_kwargs={"k": RETRIEVAL_FETCH_K},
+    )
+    return ContextualCompressionRetriever(
+        base_retriever=base_retriever,
+        base_compressor=build_reranker(RETRIEVAL_K),
     )
 
 
