@@ -1,0 +1,119 @@
+# Manifiesto de metadata para los PDFs de esta carpeta.
+#
+# Son descargas directas de PDF (no páginas HTML), así que a diferencia de
+# data/fuentes_web.yaml (que alimenta el futuro fetch_web_sources.py para
+# páginas HTML con snapshot en Markdown) estos archivos son binarios sin
+# front-matter posible. app/rag/loader.py (_cargar_manifiesto) lee este
+# archivo y usa la entrada de cada nombre_archivo para poblar
+# url/institucion/fecha_captura/tipo_fuente en la metadata del documento
+# cargado. Ver SPEC_MEJORAS_RAG.md sección 1.4.
+#
+# Todos se rastrearon y descargaron desde la misma página de servicio
+# (2026-07-21):
+#   https://www.munitacna.gob.pe/pagina/sf/servicios/licencia-funcionamiento#info
+
+archivos:
+  formulario_01_anexo01_dj_licencia_funcionamiento.pdf:
+    url: https://www.munitacna.gob.pe/pagina/sf/servicios/licencia-funcionamiento#info
+    institucion: Municipalidad Provincial de Tacna
+    fecha_captura: "2026-07-21"
+  formulario_02_anexo02_dj_actividades_simultaneas.pdf:
+    url: https://www.munitacna.gob.pe/pagina/sf/servicios/licencia-funcionamiento#info
+    institucion: Municipalidad Provincial de Tacna
+    fecha_captura: "2026-07-21"
+  formulario_03_anexo03_dj_cambio_giro.pdf:
+    url: https://www.munitacna.gob.pe/pagina/sf/servicios/licencia-funcionamiento#info
+    institucion: Municipalidad Provincial de Tacna
+    fecha_captura: "2026-07-21"
+  formulario_04_anexo01_solicitud_itse_ecse.pdf:
+    url: https://www.munitacna.gob.pe/pagina/sf/servicios/licencia-funcionamiento#info
+    institucion: Municipalidad Provincial de Tacna
+    fecha_captura: "2026-07-21"
+  formulario_05_anexo02_informacion_solicitante_nivel_riesgo.pdf:
+    url: https://www.munitacna.gob.pe/pagina/sf/servicios/licencia-funcionamiento#info
+    institucion: Municipalidad Provincial de Tacna
+    fecha_captura: "2026-07-21"
+  formulario_06_anexo03_reporte_nivel_riesgo.pdf:
+    url: https://www.munitacna.gob.pe/pagina/sf/servicios/licencia-funcionamiento#info
+    institucion: Municipalidad Provincial de Tacna
+    fecha_captura: "2026-07-21"
+  formulario_07_anexo04_dj_cumplimiento_seguridad_edificacion.pdf:
+    url: https://www.munitacna.gob.pe/pagina/sf/servicios/licencia-funcionamiento#info
+    institucion: Municipalidad Provincial de Tacna
+    fecha_captura: "2026-07-21"
+  formulario_08_anexo05_dj_renovacion_itse.pdf:
+    url: https://www.munitacna.gob.pe/pagina/sf/servicios/licencia-funcionamiento#info
+    institucion: Municipalidad Provincial de Tacna
+    fecha_captura: "2026-07-21"
+  itse_01_posterior_inicio_actividades_riesgo_bajo.pdf:
+    url: https://www.munitacna.gob.pe/pagina/sf/servicios/licencia-funcionamiento#info
+    institucion: Municipalidad Provincial de Tacna
+    fecha_captura: "2026-07-21"
+  itse_02_posterior_inicio_actividades_riesgo_medio.pdf:
+    url: https://www.munitacna.gob.pe/pagina/sf/servicios/licencia-funcionamiento#info
+    institucion: Municipalidad Provincial de Tacna
+    fecha_captura: "2026-07-21"
+  itse_03_posterior_inicio_actividades_riesgo_alto.pdf:
+    url: https://www.munitacna.gob.pe/pagina/sf/servicios/licencia-funcionamiento#info
+    institucion: Municipalidad Provincial de Tacna
+    fecha_captura: "2026-07-21"
+  itse_04_posterior_inicio_actividades_riesgo_muy_alto.pdf:
+    url: https://www.munitacna.gob.pe/pagina/sf/servicios/licencia-funcionamiento#info
+    institucion: Municipalidad Provincial de Tacna
+    fecha_captura: "2026-07-21"
+  itse_05_ecse_hasta_3000_personas.pdf:
+    url: https://www.munitacna.gob.pe/pagina/sf/servicios/licencia-funcionamiento#info
+    institucion: Municipalidad Provincial de Tacna
+    fecha_captura: "2026-07-21"
+  itse_06_ecse_mas_3000_personas.pdf:
+    url: https://www.munitacna.gob.pe/pagina/sf/servicios/licencia-funcionamiento#info
+    institucion: Municipalidad Provincial de Tacna
+    fecha_captura: "2026-07-21"
+  legislacion_02_om_0024_2021_actualizacion_tupa.pdf:
+    url: https://www.munitacna.gob.pe/pagina/sf/servicios/licencia-funcionamiento#info
+    institucion: Municipalidad Provincial de Tacna
+    fecha_captura: "2026-07-21"
+  legislacion_04_ds_004_2019_jus_tuo_ley_27444.pdf:
+    url: https://www.munitacna.gob.pe/pagina/sf/servicios/licencia-funcionamiento#info
+    institucion: Municipalidad Provincial de Tacna
+    fecha_captura: "2026-07-21"
+  legislacion_05_om_023_2022_tu_infracciones_sanciones.pdf:
+    url: https://www.munitacna.gob.pe/pagina/sf/servicios/licencia-funcionamiento#info
+    institucion: Municipalidad Provincial de Tacna
+    fecha_captura: "2026-07-21"
+  legislacion_09_rm_088_2015_pcm_tupa_modelo_itse.pdf:
+    url: https://www.munitacna.gob.pe/pagina/sf/servicios/licencia-funcionamiento#info
+    institucion: Municipalidad Provincial de Tacna
+    fecha_captura: "2026-07-21"
+  legislacion_10_dl_1200.pdf:
+    url: https://www.munitacna.gob.pe/pagina/sf/servicios/licencia-funcionamiento#info
+    institucion: Municipalidad Provincial de Tacna
+    fecha_captura: "2026-07-21"
+  legislacion_12_ds_058_2014_pcm_reglamento_itse.pdf:
+    url: https://www.munitacna.gob.pe/pagina/sf/servicios/licencia-funcionamiento#info
+    institucion: Municipalidad Provincial de Tacna
+    fecha_captura: "2026-07-21"
+  legislacion_13_ley_organica_municipalidades.pdf:
+    url: https://www.munitacna.gob.pe/pagina/sf/servicios/licencia-funcionamiento#info
+    institucion: Municipalidad Provincial de Tacna
+    fecha_captura: "2026-07-21"
+  legislacion_14_ley_marco_licencia_funcionamiento.pdf:
+    url: https://www.munitacna.gob.pe/pagina/sf/servicios/licencia-funcionamiento#info
+    institucion: Municipalidad Provincial de Tacna
+    fecha_captura: "2026-07-21"
+  legislacion_17_om_0018_2007_adecuacion_lom.pdf:
+    url: https://www.munitacna.gob.pe/pagina/sf/servicios/licencia-funcionamiento#info
+    institucion: Municipalidad Provincial de Tacna
+    fecha_captura: "2026-07-21"
+  procedimiento_01_requisitos_nueva_licencia_funcionamiento.pdf:
+    url: https://www.munitacna.gob.pe/pagina/sf/servicios/licencia-funcionamiento#info
+    institucion: Municipalidad Provincial de Tacna
+    fecha_captura: "2026-07-21"
+  procedimiento_02_requisitos_cese_actividad_licencia_funcionamiento.pdf:
+    url: https://www.munitacna.gob.pe/pagina/sf/servicios/licencia-funcionamiento#info
+    institucion: Municipalidad Provincial de Tacna
+    fecha_captura: "2026-07-21"
+  procedimiento_03_tupa_referencia_licencia_funcionamiento.pdf:
+    url: https://www.munitacna.gob.pe/pagina/sf/servicios/licencia-funcionamiento#info
+    institucion: Municipalidad Provincial de Tacna
+    fecha_captura: "2026-07-21"

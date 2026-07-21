@@ -1,7 +1,11 @@
+import time
+
 from langchain_core.chat_history import InMemoryChatMessageHistory
 
 from app.rag.chain import build_condensador, build_respuesta_components, extract_sources
 from app.tools.router import resolver_tool_call
+
+SESION_TTL_SEGUNDOS = 24 * 60 * 60
 
 
 class Chatbot:
@@ -18,33 +22,59 @@ class Chatbot:
     (Bloque 9): si la pregunta activa una tool determinista (ej. calcular
     categoría NRUS), se responde directamente con el resultado de la tool,
     sin generación del LLM de grounding.
+
+    El historial por sesión expira a las `SESION_TTL_SEGUNDOS` (24h) de
+    inactividad: si el turno siguiente llega después de ese plazo, se
+    descarta la memoria vieja y arranca una sesión nueva en vez de crecer
+    indefinidamente en RAM.
     """
 
     def __init__(self):
         self._retriever, self._respuesta_chain = build_respuesta_components()
         self._condensador = build_condensador()
         self._sesiones: dict[str, InMemoryChatMessageHistory] = {}
+        self._ultima_actividad: dict[str, float] = {}
 
-    def _historial(self, session_id: str) -> InMemoryChatMessageHistory:
-        if session_id not in self._sesiones:
+    def _historial(self, session_id: str) -> tuple[InMemoryChatMessageHistory, bool]:
+        """Devuelve el historial de la sesión y si se acaba de crear (primer
+        mensaje o TTL vencido), para que el caller pueda informar al usuario
+        que arrancó una sesión nueva sin tener que rastrear el TTL por su
+        cuenta.
+        """
+        ahora = time.monotonic()
+        vencida = (
+            session_id in self._ultima_actividad
+            and ahora - self._ultima_actividad[session_id] > SESION_TTL_SEGUNDOS
+        )
+        es_nueva = session_id not in self._sesiones or vencida
+        if es_nueva:
             self._sesiones[session_id] = InMemoryChatMessageHistory()
-        return self._sesiones[session_id]
+        self._ultima_actividad[session_id] = ahora
+        return self._sesiones[session_id], es_nueva
 
     def stream(self, pregunta: str, session_id: str = "default"):
         """Emite el resultado progresivamente (RF5) y actualiza la memoria.
 
         Cada valor emitido es un dict con "respuesta" (creciente conforme
-        llegan tokens), "fuera_de_dominio" y "fuentes". Las fuentes solo
-        vienen completas en el último valor emitido, una vez que la
-        respuesta del LLM terminó de generarse y se sabe si aplican.
+        llegan tokens), "fuera_de_dominio", "fuentes" y "sesion_nueva" (True
+        si este turno arrancó una sesión desde cero, ya sea porque era el
+        primer mensaje de ese `session_id` o porque el TTL de 24h venció).
+        Las fuentes solo vienen completas en el último valor emitido, una
+        vez que la respuesta del LLM terminó de generarse y se sabe si
+        aplican.
         """
-        historial = self._historial(session_id)
+        historial, sesion_nueva = self._historial(session_id)
 
         resultado_tool = resolver_tool_call(pregunta)
         if resultado_tool is not None:
             historial.add_user_message(pregunta)
             historial.add_ai_message(resultado_tool)
-            yield {"respuesta": resultado_tool, "fuera_de_dominio": False, "fuentes": []}
+            yield {
+                "respuesta": resultado_tool,
+                "fuera_de_dominio": False,
+                "fuentes": [],
+                "sesion_nueva": sesion_nueva,
+            }
             return
 
         pregunta_busqueda = pregunta
@@ -72,6 +102,7 @@ class Chatbot:
                 "respuesta": estructurado.get("respuesta", ""),
                 "fuera_de_dominio": estructurado.get("fuera_de_dominio", False),
                 "fuentes": [],
+                "sesion_nueva": sesion_nueva,
             }
 
         fuera_de_dominio = estructurado.get("fuera_de_dominio", False)
@@ -87,6 +118,7 @@ class Chatbot:
             "fuentes": (
                 extract_sources(docs) if (not fuera_de_dominio and fundamentado) else []
             ),
+            "sesion_nueva": sesion_nueva,
         }
 
     def invoke(self, pregunta: str, session_id: str = "default") -> dict:

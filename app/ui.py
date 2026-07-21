@@ -11,7 +11,9 @@ def _formatear_fuentes(fuentes: list[dict]) -> str:
     lineas = []
     for f in fuentes:
         detalle = f["archivo"]
-        if f.get("pagina") is not None:
+        if f.get("articulo") is not None:
+            detalle += f" (Artículo {f['articulo']})"
+        elif f.get("pagina") is not None:
             detalle += f" (pág. {f['pagina']})"
         lineas.append(f"- {detalle}")
     return "\n".join(lineas)

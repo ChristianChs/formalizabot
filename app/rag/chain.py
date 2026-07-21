@@ -8,13 +8,18 @@ from app.rag.vectorstore import load_vectorstore
 from app.prompts.system_prompt import SYSTEM_PROMPT
 from app.schemas import RespuestaMYPE
 
-# k y temperature estándar de la cadena de producción: k=6 da suficiente
-# cobertura de contexto sin diluir la ventana del prompt, y temperature=0
-# prioriza determinismo sobre contenido normativo (ver SPEC.md, Bloque 1).
-RETRIEVAL_K = 6
+# k y temperature estándar de la cadena de producción: k=4 deja margen real
+# de tokens en el prompt (SYSTEM_PROMPT + JSON format instructions + N
+# chunks) para no chocar con el límite de 6000 TPM del tier gratuito de
+# Groq junto con LLM_MAX_TOKENS reservado para la salida — con k=6 una
+# pregunta normal ya rondaba ~5200 tokens de prompt y sumado al max_tokens
+# de salida devolvía 413 "Request too large" (ver conversación de debugging
+# del 502 en /chat). temperature=0 prioriza determinismo sobre contenido
+# normativo (ver SPEC.md, Bloque 1).
+RETRIEVAL_K = 4
 # Pool de candidatos por similitud de embeddings antes de re-rankear: más
 # ancho que RETRIEVAL_K para darle al cross-encoder margen real de elegir,
-# no solo reordenar lo que el embedding ya consideraba top-6.
+# no solo reordenar lo que el embedding ya consideraba top-4.
 RETRIEVAL_FETCH_K = 20
 LLM_TEMPERATURE = 0
 
@@ -22,9 +27,13 @@ LLM_TEMPERATURE = 0
 def format_docs(docs) -> str:
     """Formatea los chunks recuperados como texto de contexto para el LLM.
 
-    Cada chunk se antecede de su fuente y número de artículo/chunk, para
-    que el modelo pueda citar de dónde proviene la información si lo
-    considera relevante en su respuesta.
+    Cada chunk se antecede de su fuente, tipo de fuente y número de
+    artículo/chunk, para que el modelo pueda citar de dónde proviene la
+    información si lo considera relevante en su respuesta. `tipo_fuente`
+    ("normativa_pdf" vs. "web_oficial") viaja explícita en el encabezado
+    para que el modelo pueda aplicar la regla del SYSTEM_PROMPT que baja el
+    tono de autoridad de afirmaciones normativas duras respaldadas solo por
+    una página web (ver SPEC_MEJORAS_RAG.md sección 1.3).
 
     Args:
         docs (list[Document]): Chunks recuperados por el retriever.
@@ -35,14 +44,21 @@ def format_docs(docs) -> str:
     bloques = []
     for doc in docs:
         fuente = doc.metadata.get("nombre_archivo", "fuente desconocida")
+        tipo_fuente = doc.metadata.get("tipo_fuente", "normativa_pdf")
         pagina = doc.metadata.get("pagina")
+        articulo_numero = doc.metadata.get("articulo_numero")
         chunk_index = doc.metadata.get("chunk_index")
+        url = doc.metadata.get("url")
 
-        encabezado = f"[Fuente: {fuente}"
+        encabezado = f"[Fuente: {fuente} | tipo_fuente: {tipo_fuente}"
         if pagina is not None:
             encabezado += f" | pág. {pagina}"
-        if chunk_index is not None:
+        if articulo_numero is not None:
+            encabezado += f" | Artículo {articulo_numero}"
+        elif chunk_index is not None:
             encabezado += f" | chunk {chunk_index}"
+        if url:
+            encabezado += f" | url: {url}"
         encabezado += "]"
 
         bloques.append(f"{encabezado}\n{doc.page_content}")
@@ -152,7 +168,10 @@ def extract_sources(docs) -> list[dict]:
         {
             "archivo": doc.metadata.get("nombre_archivo", "fuente desconocida"),
             "pagina": doc.metadata.get("pagina"),
+            "articulo": doc.metadata.get("articulo_numero"),
             "chunk": doc.metadata.get("chunk_index"),
+            "tipo_fuente": doc.metadata.get("tipo_fuente", "normativa_pdf"),
+            "url": doc.metadata.get("url"),
         }
         for doc in docs
     ]
