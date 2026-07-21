@@ -1,0 +1,192 @@
+# Fuentes web oficiales para RAG — FormalizaBot MYPE
+#
+# Recopiladas rastreando manualmente (Chrome, 2026-07-21) a partir de la
+# página semilla https://www.gob.pe/269-registrar-o-constituir-una-empresa,
+# siguiendo los enlaces internos relevantes al tema de formalización de
+# empresas (2-3 niveles de profundidad). Todas son páginas oficiales del
+# Estado peruano (gob.pe y subdominios institucionales).
+#
+# Uso previsto (ver SPEC_MEJORAS_RAG.md, sección 1): `fetch_web_sources.py`
+# (aún no implementado) leerá este archivo, descargará cada URL y guardará
+# un snapshot versionado en data/normativa_web/<slug>.md.
+#
+# Campos:
+#   url: URL completa a descargar.
+#   descripcion: para qué sirve / qué contenido tiene, en español.
+#   institucion: entidad responsable (para trazabilidad y tipo_fuente).
+#   categoria: agrupación temática (para prioridad de crawling y chunking
+#     diferenciado, ver SPEC_MEJORAS_RAG.md sección 2.2).
+#
+# Licencia de funcionamiento / ITSE (Municipalidad Provincial de Tacna):
+# NO está en este YAML. Esas 35 fuentes son PDFs de descarga directa (no
+# páginas HTML), así que en vez de un paso de fetch se descargaron ya como
+# snapshot local en data/normativa_web/licencia_funcionamiento_tacna/ —
+# quedan versionadas en git y listas para indexar sin depender de que la
+# web de la Municipalidad esté arriba en el momento de responder (mismo
+# criterio de snapshot que propone SPEC_MEJORAS_RAG.md sección 1.2).
+# Revisar solapamiento con 03_LICENCIA_DE_FUNCIONAMIENTO_E_ITSE.md y
+# 05_TACNA_LICENCIAS_Y_FORMATOS_OFICIALES.md (data/normativa/) antes de
+# indexar ambos, para no duplicar contenido en el vectorstore.
+
+- categoria: registro_constitucion_empresa
+  fuentes:
+    - url: https://www.gob.pe/269-registrar-o-constituir-una-empresa
+      descripcion: >
+        Página semilla. Resumen del proceso completo de constitución de
+        empresa (persona jurídica): pasos, beneficios de la formalidad,
+        riesgos de la informalidad.
+      institucion: PRODUCE
+
+    - url: https://www.gob.pe/271-registro-o-constitucion-de-empresa-busqueda-y-reserva-de-nombre
+      descripcion: Búsqueda y reserva del nombre/razón social de una empresa en la SUNARP.
+      institucion: SUNARP
+
+    - url: https://www.gob.pe/272-registro-o-constitucion-de-empresa-elaboracion-del-acto-constitutivo-minuta
+      descripcion: Elaboración del acto constitutivo (minuta) de la empresa.
+      institucion: PRODUCE
+
+    - url: https://www.gob.pe/273-registro-o-constitucion-de-empresa-abono-de-capital-y-bienes
+      descripcion: Abono de capital y aporte de bienes para constituir la empresa.
+      institucion: PRODUCE
+
+    - url: https://www.gob.pe/274-registro-o-constitucion-de-empresa-elaboracion-de-escritura-publica
+      descripcion: Elaboración de la escritura pública ante notario.
+      institucion: PRODUCE
+
+    - url: https://www.gob.pe/275-registro-o-constitucion-de-empresa-inscripcion-en-registros-publicos
+      descripcion: Inscripción de la empresa en Registros Públicos (SUNARP).
+      institucion: PRODUCE / SUNARP
+
+    - url: https://www.gob.pe/276-registro-o-constitucion-de-empresa-inscripcion-al-ruc-para-persona-juridica
+      descripcion: >
+        Inscripción al RUC para persona jurídica. Incluye referencia a la
+        plataforma SID-SUNARP, clave SOL y Sunat Virtual.
+      institucion: SUNAT
+
+    - url: https://www.gob.pe/10580-constituir-tu-empresa-a-traves-de-la-plataforma-sistema-de-intermediacion-digital-sid-sunarp
+      descripcion: Constitución de empresa 100% en línea vía la plataforma SID-SUNARP.
+      institucion: SUNARP
+
+    - url: https://www.gob.pe/263-abrir-o-hacer-negocio-abrir-o-hacer-negocio
+      descripcion: >
+        Página orientadora previa a constituir una empresa: qué evaluar
+        antes de empezar (tipo de negocio, persona natural vs. jurídica).
+      institucion: PRODUCE
+
+    - url: https://www.gob.pe/252-persona-natural-versus-persona-juridica
+      descripcion: Comparación persona natural vs. persona jurídica para abrir un negocio.
+      institucion: SUNAT
+
+    - url: https://www.gob.pe/33358-abrir-un-negocio-en-peru-como-persona-natural
+      descripcion: Guía para abrir un negocio en Perú como persona natural.
+      institucion: SUNAT
+
+    - url: https://www.gob.pe/33359-abrir-un-negocio-en-peru-como-persona-juridica
+      descripcion: Guía para abrir un negocio en Perú como persona jurídica.
+      institucion: SUNAT
+
+    - url: https://www.gob.pe/254-tipos-de-empresa-razon-social-o-denominacion
+      descripcion: Tipos de empresa y diferencia entre razón social y denominación.
+      institucion: SUNAT
+
+    - url: https://www.gob.pe/284-inscripcion-a-ruc-persona-natural
+      descripcion: Inscripción al RUC para persona natural (negocio unipersonal).
+      institucion: SUNAT
+
+    - url: https://www.gob.pe/332-registrar-una-marca
+      descripcion: >
+        Registro de marca (INDECOPI) — relacionado pero no estrictamente
+        normativo de formalización; evaluar relevancia al indexar.
+      institucion: INDECOPI
+
+- categoria: ruc_clave_sol
+  fuentes:
+    - url: https://www.gob.pe/393-obtener-clave-sol
+      descripcion: Cómo obtener la Clave SOL para operaciones en línea con SUNAT.
+      institucion: SUNAT
+
+    - url: https://www.gob.pe/7015-hacer-operaciones-desde-el-aplicativo-personas-sunat
+      descripcion: Uso del aplicativo móvil "Personas" de SUNAT.
+      institucion: SUNAT
+
+    - url: https://www.gob.pe/308-actualizar-datos-en-el-ruc-para-personas-naturales
+      descripcion: Actualización de datos del RUC para personas naturales.
+      institucion: SUNAT
+
+    - url: https://www.gob.pe/312-actualizar-datos-del-ruc-para-persona-juridica
+      descripcion: Actualización de datos del RUC para personas jurídicas.
+      institucion: SUNAT
+
+    - url: https://www.gob.pe/315-actualizar-datos-en-el-ruc-para-personas-naturales-actualizar-celular-y-correo-electronico
+      descripcion: Actualización de celular y correo en el RUC (persona natural).
+      institucion: SUNAT
+
+    - url: https://www.gob.pe/321-actualizar-datos-del-ruc-para-persona-juridica-actualizacion-de-celular-y-correo-electronico
+      descripcion: Actualización de celular y correo en el RUC (persona jurídica).
+      institucion: SUNAT
+
+    - url: https://www.gob.pe/8878-acceder-a-la-mesa-de-partes-virtual-mpv-sunat
+      descripcion: Acceso a la Mesa de Partes Virtual de SUNAT.
+      institucion: SUNAT
+
+- categoria: regimen_tributario
+  fuentes:
+    - url: https://www.gob.pe/1209-conocer-el-regimen-tributario-para-mi-negocio
+      descripcion: >
+        Página orientadora para elegir régimen tributario; enlaza a cada
+        régimen específico.
+      institucion: SUNAT
+
+    - url: https://www.gob.pe/280-regimenes-tributarios
+      descripcion: Índice de los 4 regímenes tributarios (NRUS, RER, RMT, RG).
+      institucion: SUNAT
+
+    - url: https://www.gob.pe/6988-conocer-el-regimen-tributario-para-mi-negocio-nuevo-regimen-unico-simplificado-nrus
+      descripcion: Nuevo Régimen Único Simplificado (NRUS) — detalle completo.
+      institucion: SUNAT
+
+    - url: https://www.gob.pe/1213
+      descripcion: Categoría especial del NRUS.
+      institucion: SUNAT
+
+    - url: https://www.gob.pe/6989
+      descripcion: Régimen Especial de Impuesto a la Renta (RER) — detalle completo.
+      institucion: SUNAT
+
+    - url: https://www.gob.pe/6990
+      descripcion: Régimen MYPE Tributario (RMT) — detalle completo.
+      institucion: SUNAT
+
+    - url: https://www.gob.pe/6991-regimen-general
+      descripcion: Régimen General (RG) del impuesto a la renta — detalle completo.
+      institucion: SUNAT
+
+- categoria: remype_laboral
+  fuentes:
+    - url: https://www.gob.pe/279-registro-de-la-micro-y-pequena-empresa-remype
+      descripcion: >
+        Registro de la Micro y Pequeña Empresa (REMYPE): requisitos,
+        beneficios laborales, procedimiento en línea.
+      institucion: MTPE
+
+    - url: https://www.gob.pe/180-sis-microempresas
+      descripcion: Seguro Integral de Salud (SIS) para microempresas.
+      institucion: MINSA / SIS
+
+    - url: https://www.gob.pe/194-seguro-social-del-peru-essalud
+      descripcion: Afiliación y beneficios de EsSalud, relevante para trabajadores de la MYPE.
+      institucion: EsSalud
+
+- categoria: sunarp_servicios
+  fuentes:
+    - url: https://www.gob.pe/10543
+      descripcion: Acceso a los servicios en línea de la SUNARP.
+      institucion: SUNARP
+
+    - url: https://www.gob.pe/10574
+      descripcion: Consultar el estado de un trámite de inscripción en la SUNARP.
+      institucion: SUNARP
+
+    - url: https://www.gob.pe/10576
+      descripcion: Presentación de título o solicitud de publicidad registral en la SUNARP.
+      institucion: SUNARP

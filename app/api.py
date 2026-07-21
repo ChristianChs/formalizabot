@@ -15,6 +15,7 @@ un `RateLimitError`.
 """
 
 import asyncio
+import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException
@@ -24,6 +25,8 @@ from app.chatbot import Chatbot
 
 QUEUE_MAXSIZE = 50
 QUEUE_WORKERS = 1
+
+logger = logging.getLogger("formalizabot.api")
 
 chatbot = Chatbot()
 
@@ -117,6 +120,11 @@ async def chat(payload: PreguntaRequest):
     try:
         resultado = await future
     except Exception as exc:
+        # Sin esto, el traceback solo llegaba al cliente en el `detail` del
+        # 502 (ej. Node/ragClient) y se perdía del lado del servicio si el
+        # cliente no lo registraba — quedaba solo la línea de acceso de
+        # uvicorn ("POST /chat 502") sin ninguna pista de la causa real.
+        logger.exception("Fallo procesando /chat (session_id=%s)", payload.session_id)
         raise HTTPException(status_code=502, detail=str(exc)) from exc
 
     return RespuestaResponse(

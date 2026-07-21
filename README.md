@@ -32,6 +32,12 @@ LLM_MODEL=llama-3.1-8b-instant
 LLM_BASE_URL=https://api.groq.com/openai/v1
 ```
 
+`RUC_API_KEY` es opcional: solo la usa la tool `consultar_estado_ruc`
+(`app/tools/ruc.py`, consulta en tiempo real de estado/condición de un RUC
+vía [api.decolecta.com](https://decolecta.gitbook.io/docs/servicios/integrations)).
+Si no se configura, la app arranca igual y esa tool responde explícitamente
+que la consulta no está disponible en vez de fallar.
+
 ## 2. Construir el índice del RAG
 
 El corpus normativo vive en `data/normativa/` (`.md` y `.pdf`). Antes de usar
