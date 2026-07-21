@@ -83,6 +83,7 @@ class RespuestaResponse(BaseModel):
     respuesta: str
     fuera_de_dominio: bool
     fuentes: list[Fuente]
+    sesion_nueva: bool
 
 
 @app.get("/health")
@@ -97,7 +98,12 @@ async def chat(payload: PreguntaRequest):
 
     `session_id` mantiene memoria de conversación por número/chat: cada JID
     de WhatsApp debe mapearse a un `session_id` estable para que el bot
-    resuelva referencias a turnos anteriores ("¿y para ese régimen?").
+    resuelva referencias a turnos anteriores ("¿y para ese régimen?"). El
+    historial expira a las 24h de inactividad (`SESION_TTL_SEGUNDOS` en
+    `app/chatbot.py`); `sesion_nueva` en la respuesta indica si este turno
+    arrancó una sesión desde cero (primer mensaje o TTL vencido), para que
+    el servicio de WhatsApp decida si mostrar el aviso de sesión nueva sin
+    tener que rastrear el TTL por su cuenta.
     """
     future = asyncio.get_running_loop().create_future()
     trabajo = _Trabajo(payload.mensaje, payload.session_id, future)
@@ -117,4 +123,5 @@ async def chat(payload: PreguntaRequest):
         respuesta=resultado["respuesta"],
         fuera_de_dominio=resultado["fuera_de_dominio"],
         fuentes=resultado["fuentes"],
+        sesion_nueva=resultado["sesion_nueva"],
     )
