@@ -6,6 +6,12 @@ from app.rag.chain import build_condensador, build_respuesta_components, extract
 from app.tools.router import resolver_tool_call
 
 SESION_TTL_SEGUNDOS = 24 * 60 * 60
+# Turnos (par usuario+bot) más recientes que se inyectan como "historial" en
+# el condensador y en la cadena de respuesta. Sin este tope, el historial de
+# una sesión de 24h crece sin límite y termina empujando el prompt (ya
+# ajustado al límite de 6000 TPM de Groq, ver app/rag/chain.py) por encima
+# de la cuota, devolviendo 413 "Request too large".
+HISTORIAL_MAX_TURNOS = 3
 
 
 class Chatbot:
@@ -52,6 +58,11 @@ class Chatbot:
         self._ultima_actividad[session_id] = ahora
         return self._sesiones[session_id], es_nueva
 
+    @staticmethod
+    def _historial_acotado(historial: InMemoryChatMessageHistory) -> list:
+        """Últimos HISTORIAL_MAX_TURNOS turnos (usuario+bot) del historial completo."""
+        return historial.messages[-(HISTORIAL_MAX_TURNOS * 2):]
+
     def stream(self, pregunta: str, session_id: str = "default"):
         """Emite el resultado progresivamente (RF5) y actualiza la memoria.
 
@@ -77,10 +88,12 @@ class Chatbot:
             }
             return
 
+        historial_acotado = self._historial_acotado(historial)
+
         pregunta_busqueda = pregunta
-        if historial.messages:
+        if historial_acotado:
             pregunta_busqueda = self._condensador.invoke(
-                {"pregunta": pregunta, "historial": historial.messages}
+                {"pregunta": pregunta, "historial": historial_acotado}
             )
 
         docs = self._retriever.invoke(pregunta_busqueda)
@@ -92,7 +105,7 @@ class Chatbot:
         entrada = {
             "pregunta": pregunta_busqueda,
             "docs": docs,
-            "historial": historial.messages,
+            "historial": historial_acotado,
         }
 
         estructurado = {}
